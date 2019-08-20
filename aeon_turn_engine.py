@@ -31,7 +31,7 @@ four_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 2', 'Player 3', 'P
 help_key = 'h'
 shuffle_key = 's'
 peek_key = 'p'
-draw_pile_key = 'd'
+discard_pile_key = 'd'
 rearrange_key = 'r'
 lash_nemesis_key = 'l'
 
