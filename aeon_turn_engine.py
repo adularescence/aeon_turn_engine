@@ -147,11 +147,11 @@ def rearrange_deck(deck, first_time=True):
   selected_card = tmp_deck.pop()
   new_deck.append(selected_card)
   print('Then the {} and final card shall be [{}]'.format(ordinal(cards_returned), new_deck[-1]))
-  print('The new turn order deck shall look like [{}], is this acceptable? [Y/n]'.format('] ['.join(new_deck)))
+  print('The new deck shall look like [{}], is this acceptable? [Y/n]'.format('] ['.join(new_deck)))
   while True:
     key_press = input()
     if key_press in ['', 'y', 'Y']:
-      print('Okay the new turn order deck looks like [{}].'.format('] ['.join(new_deck)))
+      print('Okay the new deck looks like [{}].'.format('] ['.join(new_deck)))
       return list(reversed(new_deck))
     else:
       print('Restarting then...')
