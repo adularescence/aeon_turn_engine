@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # Simulates an "Aeon's End" (a board game) "Turn Order Deck"
 # arg0 - the number of players
@@ -91,7 +91,7 @@ def peek_top():
       while True:
         print('Return the [{}] card to the top of the deck? [Y/n]'.format(deck[-1]))
         key_press = input()
-        if key_press != 'n' and key_press in ['', 'y', 'Y']:
+        if key_press in ['', 'y', 'Y']:
           print('Okay, returning the [{}] card to the top of the deck.'.format(deck[-1]))
         break
     elif key_press == 'b':
@@ -99,7 +99,7 @@ def peek_top():
         # require confirmation
         print('Return the [{}] card to the bottom of the deck? [Y/n]'.format(deck[-1]))
         key_press = input()
-        if key_press != 'n' and key_press in ['', 'y', 'Y']:
+        if key_press in ['', 'y', 'Y']:
           print('Okay, returning the [{}] card to the bottom of the deck.'.format(deck[-1]))
           deck.insert(0, deck.pop())
         break
