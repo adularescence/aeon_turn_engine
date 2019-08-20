@@ -38,8 +38,9 @@ lash_nemesis_key = 'l'
 help_string = """Useful keystrokes:
   h - shows this (again)
   p - peek at the top card (Flare or Garnet Shard)
-  s - shows you the discarded cards
-  r - rearranges the turn order deck (Xaxos's Hero Power)
+  s - shuffles the discard pile into the deck
+  d - shows the discard pile and number of cards remaining in the deck
+  r - rearranges the deck (Xaxos's Hero Power)
   l - shuffles a discarded card back into the deck (Nemesis Power or Lash's Hero Power)
   <anything else> - draws the next card"""
 
@@ -74,7 +75,7 @@ def peek_top():
 
   # ensure that we want to peek at the top of the deck
   while True:
-    key_press = input('Are you sure you want to peek at the next card in the deck? [y/N]')
+    key_press = input('Are you sure you want to peek at the next card in the deck? [y/N]\n')
     if key_press == 'y':
       break
     elif key_press in ['', 'n', 'N']:
@@ -110,12 +111,13 @@ def peek_top():
       key_press = 'hacky solution hehe'
 
 # for Xaxos's Hero Power
-def rearrange_deck(deck):
+def rearrange_deck(deck, first_time=True):
   key_press = None
 
   # ensure that we want to rearrange the deck
-  while True:
-    key_press = input('Are you sure you want to rearrange the turn order deck? [y/N]')
+  while first_time and True:
+    print('There are {} cards left in the deck.'.format(len(deck)))
+    key_press = input('Are you sure you want to rearrange the deck? [y/N]\n')
     if key_press == 'y':
       break
     elif key_press in ['', 'n', 'N']:
@@ -123,7 +125,7 @@ def rearrange_deck(deck):
       return deck
 
   # copy the passed in deck, and then pick the order of the new deck one by one
-  print('Rearrange, in the desired order of play, the turn order deck.')
+  print('Rearrange the cards in the deck in the desired order of play.')
   tmp_deck = deck.copy()
   new_deck = []
   cards_returned = 1
@@ -132,26 +134,28 @@ def rearrange_deck(deck):
     key_press = input('  {}\n'.format(print_with_indices(tmp_deck)))
     if key_press == 'q':
       print('Restarting...')
-      rearrange_deck(deck)
+      return rearrange_deck(deck, False)
     elif key_press in ['0', '1', '2', '3', '4', '5'][:len(tmp_deck)] and inputted_int(key_press):
       selected_card = tmp_deck.pop(int(key_press))
       new_deck.append(selected_card)
       cards_returned += 1
 
-  # all but one cards selected, the last one just goes to the bottom, and we ask if this new order is correct
+  # all but one cards selected, the last one just goes to the bottom
+  # then we ask if this new order is correct
   # if it is good, return the new order
-  # if it is bad, call itself because we have seen the order of the cards already
-  cards_returned += 1
-  print('Then the {} shall be [{}]\n.'.format(ordinal(cards_returned), tmp_deck.pop()))
-  print('The new deck shall look like [{}], is this acceptable? [Y/n]'.format('] ['.join(list(reversed(new_deck)))))
+  # if it is bad, call itself because we have seen the order of the cards already and must finish the deed
+  selected_card = tmp_deck.pop()
+  new_deck.append(selected_card)
+  print('Then the {} and final card shall be [{}]'.format(ordinal(cards_returned), new_deck[-1]))
+  print('The new turn order deck shall look like [{}], is this acceptable? [Y/n]'.format('] ['.join(new_deck)))
   while True:
     key_press = input()
     if key_press in ['', 'y', 'Y']:
-      print('Okay the new deck looks like [{}].'.format('] ['.join(list(reversed(new_deck)))))
-      return new_deck
+      print('Okay the new turn order deck looks like [{}].'.format('] ['.join(new_deck)))
+      return list(reversed(new_deck))
     else:
       print('Restarting then...')
-      rearrange_deck(deck)
+      return rearrange_deck(deck, False)
     
 # for Lash's Hero Power
 def return_one_card():
@@ -159,7 +163,7 @@ def return_one_card():
 
   # ensure that we want to return one card from the discard pile
   while True:
-    key_press = input('Are you sure you want to shuffle a card from the discard pile into the deck? [y/N]')
+    key_press = input('Are you sure you want to shuffle a card from the discard pile into the deck? [y/N]\n')
     if key_press == 'y':
       break
     elif key_press in ['', 'n', 'N']:
@@ -170,7 +174,10 @@ def return_one_card():
   while True:
     print('Which of these cards would you like to shuffle back into the deck? (Enter the corresponding index):')
     key_press = input('  {}\n'.format(print_with_indices(discard_pile)))
-    if key_press in ['0', '1', '2', '3', '4', '5'][:len(discard_pile)] and inputted_int(key_press):
+    if key_press == 'q':
+      print('Okay, cancelling...')
+      return
+    elif key_press in ['0', '1', '2', '3', '4', '5'][:len(discard_pile)] and inputted_int(key_press):
       selected_card = discard_pile[int(key_press)]
       key_press = input('Shuffle the [{}] card back into the deck? [Y/n]\n'.format(selected_card))
       if key_press in ['', 'y', 'Y']:
@@ -214,29 +221,33 @@ try:
         turn_cycles += 1
         print("This is the {} set of turns.".format(ordinal(turn_cycles)))
       else:
-        print('The deck needs to be exhausted before you can shuffle it.')
+        print('Ignoring because the deck needs to be exhausted before you can shuffle it.')
     elif key_press == peek_key:
-      peek_top()
+      if len(deck) == 0:
+        print('Ignoring because the deck has no cards left to peek at.')
+      else:
+        peek_top()
     elif key_press == discard_pile_key:
-      print('The discarded cards are: [{}]'.format('] ['.join(list(reversed(discard_pile)))))
+      print('The discarded cards are: [{}]'.format('] ['.join(discard_pile)))
+      print('There are {} cards left in the deck.'.format(len(deck)))
     elif key_press == rearrange_key:
       if len(deck) == 1:
-        print('The deck only has one card left to rearrange.')
+        print('Ignoring because the deck only has one card left to rearrange.')
       elif len(deck) == 0:
-        print('The deck has no cards left to rearrange.')
+        print('Ignoring because the deck has no cards left to rearrange.')
       else:
         deck = rearrange_deck(deck)
     elif key_press == lash_nemesis_key:
-      if len(discard_pile) != 0:
-        return_one_card()
+      if len(discard_pile) == 0:
+        print('Ignoring because the discard pile has no cards to shuffle back into the deck.')
       else:
-        print('Cannot shuffle one card from the discard pile into the deck, because the discard pile is empty!')
+        return_one_card()
     else:
       if len(deck) != 0:
         discard_pile.append(deck.pop())
         print('The next turn belongs to: [{}]'.format(discard_pile[-1]))
       else:
-        print('The turn order deck has been exhausted.')
+        print('the deck has been exhausted.')
         
 except (EOFError, KeyboardInterrupt) as e:
   print("""
