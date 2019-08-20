@@ -24,29 +24,29 @@ except ValueError:
 ### GLOBAL VARS ###
 
 player_count = int(sys.argv[1])
-deck = []
-drawn_pile = []
 two_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 1', 'Player 2', 'Player 2']
 three_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 2', 'Player 3', 'Wild']
 four_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 2', 'Player 3', 'Player 4']
-turn_cycles = 1
 
-key_press = None
 help_key = 'h'
+shuffle_key = 's'
 peek_key = 'p'
-show_key = 's'
+draw_pile_key = 'd'
 rearrange_key = 'r'
 lash_nemesis_key = 'l'
 
 help_string = """Useful keystrokes:
   h - shows this (again)
-  p - peek the top card (Flare or Garnet Shard)
-  s - shows you the already-drawn cards
-  r - rearranges the un-drawn cards (Xaxos's Hero Power)
-  l - shuffles an already-drawn card back into the deck (Nemesis or Lash's Hero Power)
+  p - peek at the top card (Flare or Garnet Shard)
+  s - shows you the discarded cards
+  r - rearranges the turn order deck (Xaxos's Hero Power)
+  l - shuffles a discarded card back into the deck (Nemesis Power or Lash's Hero Power)
   <anything else> - draws the next card"""
 
-
+deck = []
+discard_pile = []
+key_press = None
+turn_cycles = 1
 
 ### Helper Functions ###
 
@@ -157,9 +157,9 @@ def rearrange_deck(deck):
 def return_one_card():
   key_press = None
 
-  # ensure that we want to return one card from the drawn pile
+  # ensure that we want to return one card from the discard pile
   while True:
-    key_press = input('Are you sure you want to shuffle a card from the drawn pile into the deck? [y/N]')
+    key_press = input('Are you sure you want to shuffle a card from the discard pile into the deck? [y/N]')
     if key_press == 'y':
       break
     elif key_press in ['', 'n', 'N']:
@@ -169,16 +169,16 @@ def return_one_card():
   # prompt for which card to return, then return that card to the deck and shuffle the deck
   while True:
     print('Which of these cards would you like to shuffle back into the deck? (Enter the corresponding index):')
-    key_press = input('  {}\n'.format(print_with_indices(drawn_pile)))
-    if key_press in ['0', '1', '2', '3', '4', '5'][:len(drawn_pile)] and inputted_int(key_press):
-      selected_card = drawn_pile[int(key_press)]
+    key_press = input('  {}\n'.format(print_with_indices(discard_pile)))
+    if key_press in ['0', '1', '2', '3', '4', '5'][:len(discard_pile)] and inputted_int(key_press):
+      selected_card = discard_pile[int(key_press)]
       key_press = input('Shuffle the [{}] card back into the deck? [Y/n]\n'.format(selected_card))
       if key_press in ['', 'y', 'Y']:
         print('Okay, shuffling the [{}] card back into the deck.'.format(selected_card))
-        drawn_pile.remove(selected_card)
+        discard_pile.remove(selected_card)
         deck.append(selected_card)
         random.shuffle(deck)
-        print('The remaining drawn cards are: [{}]'.format('] ['.join(drawn_pile)))
+        print('The remaining discarded cards are: [{}]'.format('] ['.join(discard_pile)))
         return
 
 
@@ -205,31 +205,46 @@ try:
     key_press = input()
     if key_press == help_key:
       print(help_string)
-    elif key_press == peek_key:
-      peek_top()
-    elif key_press == show_key:
-      print('The drawn cards are: [{}]'.format('] ['.join(list(reversed(drawn_pile)))))
-    elif key_press == rearrange_key:
-      deck = rearrange_deck(deck)
-    elif key_press == lash_nemesis_key:
-      return_one_card()
-    else:
-      drawn_pile.append(deck.pop())
-      print('The next turn belongs to: [{}]'.format(drawn_pile[-1]))
+    elif key_press == shuffle_key:
       if len(deck) == 0:
-        print('The turn order deck has been exhausted. Shuffling the drawn pile into the turn order deck.')
-        deck = drawn_pile
+        print('Shuffling the discard pile into the deck.')
+        deck = discard_pile
         random.shuffle(deck)
-        drawn_pile = []
+        discard_pile = []
         turn_cycles += 1
         print("This is the {} set of turns.".format(ordinal(turn_cycles)))
+      else:
+        print('The deck needs to be exhausted before you can shuffle it.')
+    elif key_press == peek_key:
+      peek_top()
+    elif key_press == discard_pile_key:
+      print('The discarded cards are: [{}]'.format('] ['.join(list(reversed(discard_pile)))))
+    elif key_press == rearrange_key:
+      if len(deck) == 1:
+        print('The deck only has one card left to rearrange.')
+      elif len(deck) == 0:
+        print('The deck has no cards left to rearrange.')
+      else:
+        deck = rearrange_deck(deck)
+    elif key_press == lash_nemesis_key:
+      if len(discard_pile) != 0:
+        return_one_card()
+      else:
+        print('Cannot shuffle one card from the discard pile into the deck, because the discard pile is empty!')
+    else:
+      if len(deck) != 0:
+        discard_pile.append(deck.pop())
+        print('The next turn belongs to: [{}]'.format(discard_pile[-1]))
+      else:
+        print('The turn order deck has been exhausted.')
+        
 except (EOFError, KeyboardInterrupt) as e:
   print("""
 So you've pressed Ctrl+C or Ctrl+D.
 
 Fortunately I have saved the state of the deck, just for you:
   [{}]
-And the drawn pile:
+And the discard pile:
   [{}]
-  """.format('] ['.join(list(reversed(deck))), '] ['.join(drawn_pile)))
+  """.format('] ['.join(list(reversed(deck))), '] ['.join(discard_pile)))
   exit(-1)
