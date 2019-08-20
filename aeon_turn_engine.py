@@ -247,7 +247,7 @@ try:
         discard_pile.append(deck.pop())
         print('The next turn belongs to: [{}]'.format(discard_pile[-1]))
       else:
-        print('the deck has been exhausted.')
+        print('Cannot draw because the deck has been exhausted.')
         
 except (EOFError, KeyboardInterrupt) as e:
   print("""
