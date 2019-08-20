@@ -24,11 +24,11 @@ except ValueError:
 ### GLOBAL VARS ###
 
 player_count = int(sys.argv[1])
-deck = ['Nemesis', 'Nemesis']
+deck = []
 drawn_pile = []
-two_player_deck = ['Player 1', 'Player 1', 'Player 2', 'Player 2']
-three_player_deck = ['Player 1', 'Player 2', 'Player 3', 'Wild']
-four_player_deck = ['Player 1', 'Player 2', 'Player 3', 'Player 4']
+two_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 1', 'Player 2', 'Player 2']
+three_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 2', 'Player 3', 'Wild']
+four_player_deck = ['Nemesis', 'Nemesis', 'Player 1', 'Player 2', 'Player 3', 'Player 4']
 turn_cycles = 1
 
 key_press = None
@@ -115,7 +115,7 @@ def rearrange_deck(deck):
 
   # ensure that we want to rearrange the deck
   while True:
-    key_press = input('Are you sure you want to peek at the next card in the deck? [y/N]')
+    key_press = input('Are you sure you want to rearrange the turn order deck? [y/N]')
     if key_press == 'y':
       break
     elif key_press in ['', 'n', 'N']:
@@ -153,14 +153,13 @@ def rearrange_deck(deck):
       print('Restarting then...')
       rearrange_deck(deck)
     
-
 # for Lash's Hero Power
 def return_one_card():
   key_press = None
 
   # ensure that we want to return one card from the drawn pile
   while True:
-    key_press = input('Are you sure you want to peek at the next card in the deck? [y/N]')
+    key_press = input('Are you sure you want to shuffle a card from the drawn pile into the deck? [y/N]')
     if key_press == 'y':
       break
     elif key_press in ['', 'n', 'N']:
@@ -188,16 +187,15 @@ def return_one_card():
 
 try:
   # Setup
-  print('The number of players is: {}'.format(player_count))
   if player_count == 2:
-    print('Adding the [{}] cards to the deck and shuffling for the first time.'.format('] ['.join(two_player_deck)))
-    deck += two_player_deck
+    print('The number of players is {}, so the deck will contain [{}].'.format(player_count, '] ['.join(two_player_deck)))
+    deck = two_player_deck.copy()
   elif player_count == 3:
-    print('Adding the [{}] cards to the deck and shuffling for the first time.'.format('] ['.join(three_player_deck)))
-    deck += three_player_deck
+    print('The number of players is {}, so the deck will contain [{}].'.format(player_count, '] ['.join(three_player_deck)))
+    deck = three_player_deck.copy()
   elif player_count == 4:
-    print('Adding the [{}] cards to the deck and shuffling for the first time.'.format('] ['.join(four_player_deck)))
-    deck += four_player_deck
+    print('The number of players is {}, so the deck will contain [{}].'.format(player_count, '] ['.join(four_player_deck)))
+    deck = four_player_deck.copy()
   random.shuffle(deck)
   print("This is the {} set of turns.".format(ordinal(turn_cycles)))
   print(help_string)
