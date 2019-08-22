@@ -5,18 +5,11 @@
 
 import math, random, sys
 
-try:
-  if len(sys.argv) != 2 or int(sys.argv[1]) not in [2, 3, 4]:
-    print ("""
-  Please provide the number of players to play with. The number of players must be 2, 3, or 4:
-  Usage: {} <# of players>
-    """.format(sys.argv[0]))
-    sys.exit(2)
-except ValueError:
-  print("""
-  {} is not a number, please enter the number of players to play with. The number of players must be 2, 3, or 4:
-  Usage: {} <# of players>
-  """.format(sys.argv[1], sys.argv[0]))
+if len(sys.argv) != 2 or sys.argv[1] not in ['2', '3', '4']:
+  print ("""
+Please provide the number of players to play with. The number of players must be 2, 3, or 4:
+Usage: {} <# of players>
+  """.format(sys.argv[0]))
   sys.exit(2)
 
 
