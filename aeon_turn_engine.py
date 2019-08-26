@@ -78,7 +78,7 @@ def peek_top():
     # reveal the top of the deck, then decide if it goes back on top or to the bottom
     print('Okay, the next card in the deck is [{}]'.format(deck[-1]))
     while True:
-        print('Return the [{}] card to the [t]op of the deck, or to the [b]ottom of the deck?'.format(deck[-1]))
+        print('Return the [{}] card to the [t]op of the deck, or to the [b]ottom of the deck? Current discard pile:\n  [{}]'.format(deck[-1], '] ['.join(discard_pile)))
         key_press = input()
         if key_press == 't':
             # require confirmation
